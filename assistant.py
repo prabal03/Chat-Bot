@@ -41,9 +41,9 @@ while True:
         exit()
     elif "don't" in Input or "dont" in Input or "do not" in Input:
         engine.setProperty("rate", 150)
-        engine.say("okay Iam not opening this file")
+        engine.say("okay Iam not doing this")
         engine.runAndWait()
-        print("\nokay I am not opening this file")
+        print("\nokay I am not doing this.")
     elif ("wmplayer" in Input) or ("player" in Input) or ("media" in Input) or ('wmplayer' in Input) or (
             'window media player' in Input):
         engine.setProperty("rate", 150)
