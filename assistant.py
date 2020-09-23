@@ -2,11 +2,13 @@ import os
 import pyttsx3
 import calendar as c
 import time as t
+import speech_recognition as sr
+import wikipedia as wp
+import smtplib as sm
+import getpass as gp
 
 engine = pyttsx3.init()
 print("\n\t\t\t WELCOME TO CHATBOT")
-print("Hii\nTo Chat With Male Tap 0 Or To Chat With Female Tap 1 : ", end="")
-p = int(input())
 print('\n# U Can Try In This Way:\n1.Try "Run any player."\n2.Try "I want to paint."'
       '\n3.Try "can u please open writing pad for me."\n4 You Can Also Open Browser.\n'
       '5.Try "Excel,Word,PowerPoint,Control panel,Photoshop,Pdf reader.\n'
@@ -15,336 +17,418 @@ print('\n# U Can Try In This Way:\n1.Try "Run any player."\n2.Try "I want to pai
       '10.You can also shutdown ,restart, sleep, hibernate. ')
 print(
     "\n'Help' - If In Output You Get An Error Name Related To Input Or Output Command.This Means Your Path Is Not Set "
-    "Which you Want To Open.")
-if p == 1:
-    engine.setProperty('rate', 170)
-    voices = engine.getProperty("voices")
-    engine.setProperty("voice", "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0")
-    engine.say("Hey I am your ChatBot ")
-    engine.say("What Can I Do For You")
+    "Which you Want To Open")
+engine.setProperty('rate', 170)
+engine.setProperty("voice", "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_DAVID_11.0")
+time = int(t.strftime("%H"))
+if 5 <= time < 12:
+    engine.say("Good Morning")
     engine.runAndWait()
-else:
-    engine.setProperty('rate', 170)
-    voices = engine.getProperty("voices")
-    engine.setProperty("voice", "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_DAVID_11.0")
-    engine.say("HEY I am your ChatBot ")
-    engine.say("What Can I Do For You")
+elif 12 <= time < 18:
+    engine.say("Good Afternoon")
     engine.runAndWait()
+elif 18 <= time < 24 or 0 <= time < 5:
+    engine.say("Good Evening")
+    engine.runAndWait()
+engine.say(" I am your ChatBot ")
+engine.say(" What Can I Do For You ")
+engine.runAndWait()
 
 while True:
-    Input = input("\nHow Can I Help U:").lower()
-    if "exit" in Input or "quit" in Input or "stop" in Input:
+    def speech():
+        try:
+            r = sr.Recognizer()
+            with sr.Microphone() as source:
+                print("start saying...")
+                audio = r.listen(source)
+                print("wait processing your input")
+                data = r.recognize_google(audio).lower()
+            return data
+        except:
+            exit()
+
+
+    s = speech()
+    print(s)
+    if "exit" in s or "quit" in s or "stop" in s:
         engine.setProperty("rate", 150)
-        engine.say("see you soon")
+        engine.say("chatbot closing the service have a good day")
         engine.runAndWait()
-        print("\nBYE")
         exit()
-    elif "don't" in Input or "dont" in Input or "do not" in Input:
+    elif ("wmplayer" in s) or ('wmplayer' in s) or (
+            'window media player' in s):
         engine.setProperty("rate", 150)
-        engine.say("okay Iam not doing this")
-        engine.runAndWait()
-        print("\nokay I am not doing this.")
-    elif ("wmplayer" in Input) or ("player" in Input) or ("media" in Input) or ('wmplayer' in Input) or (
-            'window media player' in Input):
-        engine.setProperty("rate", 150)
-        engine.say("wait a second opening result")
+        engine.say("wait a second opening window media player")
         engine.runAndWait()
         os.system("wmplayer")
-    elif ("vlc" in Input) or ("vlc player" in Input) or (" vlc media" in Input):
+        exit()
+    elif ("vlc" in s) or ("vlc player" in s) or (" vlc media" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening vlc")
         engine.runAndWait()
         os.system("vlc")
-    elif ("notepad" in Input) or ("notes" in Input) or ("writing pad" in Input):
+        exit()
+    elif ("notepad" in s) or ("notes" in s) or ("writing pad" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening notepad")
         engine.runAndWait()
         os.system("notepad")
-    elif ("browser" in Input) or ("web" in Input) or ("explorer" in Input) or ("internet" in Input) or \
-            ("chrome" in Input) or ("edge" in Input) or ('msedge' in Input) or ('microsoft edge' in Input) or \
-            ("firefox" in Input):
-        if ('edge' in Input) or ('msedge' in Input) or ('microsoft edge' in Input):
+        exit()
+    elif ("information" in s) or ("biography" in s) or ("about" in s) or ("wikipedia" in s):
+        engine.say("whose information do you want")
+        engine.runAndWait()
+        x = speech()
+        print(wp.summary(x))
+        voices = engine.getProperty("voices")
+        engine.setProperty("voice", "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0")
+        engine.say(wp.summary(x, sentences=3))
+        engine.runAndWait()
+        exit()
+    elif ("browser" in s) or ("web" in s) or ("explorer" in s) or ("internet" in s) or \
+            ("chrome" in s) or ("edge" in s) or ('msedge' in s) or ('microsoft edge' in s) or \
+            ("firefox" in s):
+        if ('edge' in s) or ('msedge' in s) or ('microsoft edge' in s):
             def restart():
-                engine.say("Can I search for You press Y for Yes, N for No")
+                engine.say("Can I search for You")
                 engine.runAndWait()
-                print("\nCan I search for You  press Y for Yes, N for No :", end="")
-                s = input().lower()
-                if s == "y":
+                s1 = speech()
+                if s1 == "yes" or s1 == "ok":
                     def restart1():
-                        z = input("\nGive the name of a website that you want to open:")
-                        print("\nIf U Want To Search Inside This Then\npress Y for Yes, N for No:", end="")
-                        b = input().lower()
-                        if b == "y":
-                            y = input("\nWhat u want to search:")
+                        engine.say("give the name of website")
+                        engine.runAndWait()
+                        z = speech()
+                        engine.say("can i search inside this")
+                        engine.runAndWait()
+                        b = speech()
+                        if b == "yes" or b == "ok":
+                            engine.say("what do you want to search")
+                            engine.runAndWait()
+                            y = speech()
                             y1 = y.replace(" ", '+')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start msedge www.' + z + '.com/search?q=' + y1)
-                        elif b == "n":
+                        elif b == "no":
                             z1 = z.replace(" ", '')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start msedge www.' + z1 + '.com')
                         else:
-                            engine.say("Sorry, I Cant Catch It")
+                            engine.say("I am not sure say it again")
                             engine.runAndWait()
                             restart1()
 
                     restart1()
 
-                elif s == "n":
+                elif s1 == "no":
                     engine.say("wait a second opening browser")
                     engine.runAndWait()
                     os.system('msedge')
                 else:
-                    engine.say("Sorry, I Cant Catch It")
+                    engine.say("I am not sure say it again")
                     engine.runAndWait()
                     restart()
 
 
             restart()
+            exit()
 
-        elif ('chrome' in Input) or ('chrome browser' in Input) or ('chrome web' in Input):
+        elif ('chrome' in s) or ('chrome browser' in s) or ('chrome web' in s):
             def again():
-                engine.say("Can I search for You press Y for Yes, N for No")
+                engine.say("Can I search for You")
                 engine.runAndWait()
-                print("\nCan I search for You   press Y for Yes, N for No:", end="")
-                s = input().lower()
-                if s == "y":
+                s1 = speech()
+                if s1 == "yes" or s1 == "ok":
                     def again1():
-                        z = input("\nGive the name of a website that you want to open:")
-                        print("\nIf U Want To Search Inside This Then\npress Y for yes, N for no:", end="")
-                        b = input().lower()
-                        if b == "y":
-                            y = input("\nWhat u want to search:")
+                        engine.say("give the name of website")
+                        engine.runAndWait()
+                        z = speech()
+                        engine.say("can i search  inside this")
+                        engine.runAndWait()
+                        b = speech()
+                        if b == "yes" or b == "ok":
+                            engine.say("what do you want to search")
+                            engine.runAndWait()
+                            y = speech()
                             y1 = y.replace(" ", '+')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start chrome www.' + z + '.com/search?q=' + y1)
-                        elif b == "n":
+                        elif b == "no":
                             z1 = z.replace(" ", '')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start chrome www.' + z1 + '.com')
                         else:
-                            engine.say("Sorry, I Cant Catch It")
+                            engine.say("I am not sure say it again")
                             engine.runAndWait()
                             again1()
 
                     again1()
-                elif s == "n":
+                elif s1 == "no":
                     engine.say("wait a second opening browser")
                     engine.runAndWait()
                     os.system('chrome')
                 else:
-                    engine.say("Sorry, I Cant Catch It")
+                    engine.say("I am not sure say it again")
                     engine.runAndWait()
                     again()
 
 
             again()
+            exit()
 
-        elif ('firefox' in Input) or ('firefox browser' in Input) or ('firefox web' in Input):
+        elif ('firefox' in s) or ('firefox browser' in s) or ('firefox web' in s):
             def repeat():
-                engine.say("Can I search for You press Y for Yes, N for No")
+                engine.say("Can I search for You")
                 engine.runAndWait()
-                print("\nCan I search for You   press Y for Yes, N for No:", end="")
-                s = input().lower()
-                if s == "y":
+                s1 = speech()
+                if s1 == "yes" or s1 == "ok":
                     def repeat1():
-                        z = input("\nGive the name of a website that you want to open:")
-                        print("\nIf U Want To Search Inside This Then\npress Y for yes, N for no:", end="")
-                        b = input().lower()
-                        if b == "y":
-                            y = input("\nWhat u want to search:")
+                        engine.say("give the name of a website that you want to open")
+                        engine.runAndWait()
+                        z = speech()
+                        engine.say("can i search inside this")
+                        engine.runAndWait()
+                        b = speech()
+                        if b == "yes" or b == "ok":
+                            engine.say("what do you want to search")
+                            engine.runAndWait()
+                            y = speech()
                             y1 = y.replace(" ", '+')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start firefox www.' + z + '.com/search?q=' + y1)
-                        elif b == "n":
+                        elif b == "no":
                             z1 = z.replace(" ", '')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start firefox www.' + z1 + '.com')
                         else:
-                            engine.say("Sorry, I Cant Catch It")
+                            engine.say("I am not sure say it again")
                             engine.runAndWait()
                             repeat1()
 
                     repeat1()
-                elif s == "n":
+                elif s1 == "no":
                     engine.say("wait a second opening browser")
                     engine.runAndWait()
                     os.system('firefox')
                 else:
-                    engine.say("Sorry, I Cant Catch It")
+                    engine.say("I am not sure say it again")
                     engine.runAndWait()
                     repeat()
 
 
             repeat()
+            exit()
         else:
             def reopen():
-                engine.say("Can I search for You press Y for Yes, N for No")
+                engine.say("Can I search for You")
                 engine.runAndWait()
-                print("\nCan I search for You   press Y for Yes, N for No :", end="")
-                s = input().lower()
-                if s == "y":
+                s1 = speech()
+                if s1 == "yes" or s1 == "ok":
                     def reopen1():
-                        z = input("\nGive the name of a website that you want to open:")
-                        print("\nIf U Want To Search Inside This Then\npress Y for Yes, N for No. ", end="")
-                        b = input().lower()
-                        if b == "y":
-                            y = input("\nWhat you want to search:")
+                        engine.say("give the name of website  that you want to open")
+                        engine.runAndWait()
+                        z = speech()
+                        engine.say("Can I search inside this")
+                        engine.runAndWait()
+                        b = speech()
+
+                        if b == "yes" or b == "ok":
+                            engine.say("what do you want to search")
+                            engine.runAndWait()
+                            y = speech()
                             y1 = y.replace(" ", '+')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start msedge  www.' + z + '.com/search?q=' + y1)
-                        elif b == "n":
+                        elif b == "no":
                             z1 = z.replace(" ", '')
                             engine.say("wait a second opening result")
                             engine.runAndWait()
                             os.system('start msedge  www.' + z1 + '.com')
                         else:
-                            engine.say("Sorry, I Cant Catch It")
+                            engine.say("I am not sure say it again")
                             engine.runAndWait()
                             reopen1()
 
                     reopen1()
-                elif s == "n":
+                elif s == "no":
                     engine.say("wait a second opening browser")
                     engine.runAndWait()
                     os.system('start msedge')
                 else:
-                    engine.say("Sorry, I Cant Catch It")
+                    engine.say("I am not sure say it again")
                     engine.runAndWait()
                     reopen()
 
 
             reopen()
-    elif (("paint" in Input) or ("drawing pad" in Input) or ("white board" in Input) or ("draw" in Input) or (
-            "drwaing" in Input) or ("sketch" in Input)):
+            exit()
+    elif "mail" in s or "email" in s or "send" in s:
+        gmail_user = input("\nEnter your user name: ")
+        gmail_password = gp.getpass("\nEnter your password")
+        engine.say("enter the email address you want to send")
+        engine.runAndWait()
+        to = input("\n")
+        too = to.split()
+        try:
+            server = sm.SMTP_SSL('smtp.gmail.com')
+            server.ehlo()
+            server.login(gmail_user, gmail_password)
+            subject = input("\nenter the subject you want to add:")
+            body = input("\ntype the message:")
+            message = f"subject:{subject}\n\n{body}"
+            server.sendmail(gmail_user, to, message)
+            engine.say("email send scussefully")
+            engine.runAndWait()
+            print("\nemail send scussefully")
+        except Exception as e:
+            engine.say("something went wrong")
+            engine.runAndWait()
+            print('\nsomething went wrong',e)
+    elif (("paint" in s) or ("drawing pad" in s) or ("white board" in s) or ("draw" in s) or (
+            "drwaing" in s) or ("sketch" in s)):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening paint")
         engine.runAndWait()
         os.system("mspaint")
-    elif ("adobe" in Input) or ("reader" in Input) or ("pdf" in Input):
+        exit()
+    elif ("adobe" in s) or ("reader" in s) or ("pdf" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening reader")
         engine.runAndWait()
         os.system("acrord32")
-    elif ("ppt" in Input) or ("presentation" in Input) or ("power point" in Input) or ("slide" in Input):
+        exit()
+    elif ("ppt" in s) or ("presentation" in s) or ("power point" in s) or ("slide" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening result")
         engine.runAndWait()
         os.system("powerpnt")
-    elif ("photoshop" in Input) or ("adobe photoshop" in Input) or ("photo editor" in Input) or (
-            "image editor" in Input) or \
-            ("photo maker" in Input) or ("image maker" in Input):
+        exit()
+    elif ("photoshop" in s) or ("adobe photoshop" in s) or ("photo editor" in s) or (
+            "image editor" in s) or \
+            ("photo maker" in s) or ("image maker" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening result")
         engine.runAndWait()
         os.system("photoshop")
-    elif ("control panel" in Input) or ("panel" in Input) or ("settings" in Input) or ("system" in Input) or \
-            ("window setting" in Input):
+        exit()
+    elif ("control panel" in s) or ("panel" in s) or ("settings" in s) or ("system" in s) or \
+            ("window setting" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening settings")
         engine.runAndWait()
         os.system("control")
-    elif ("word" in Input) or ("wordpad" in Input) or ("word file" in Input) or ("microsoft word" in Input) or \
-            ("msword" in Input):
+        exit()
+    elif ("word" in s) or ("wordpad" in s) or ("word file" in s) or ("microsoft word" in s) or \
+            ("msword" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening word")
         engine.runAndWait()
         os.system("winword")
-    elif ("excel" in Input) or ("exel" in Input) or ("sheet" in Input):
+        exit()
+    elif ("excel" in s) or ("exel" in s) or ("sheet" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening excel")
         engine.runAndWait()
         os.system("excel")
-    elif ("camera" in Input) or ("webcam" in Input) or ("photo" in Input) or \
-            ("record video" in Input) or ("selfie" in Input):
+        exit()
+    elif ("camera" in s) or ("webcam" in s) or ("photo" in s) or \
+            ("record video" in s) or ("selfie" in s):
         engine.setProperty("rate", 150)
         engine.say("wait a second opening camera")
         engine.runAndWait()
         os.system("start microsoft.windows.camera:")
-    elif ("calculator" in Input) or ("calculate" in Input) or ("operations" in Input) or \
-            ("maths" in Input) or ("mathematical" in Input) or ("calc" in Input) or ("sum" in Input) \
-            or ("add" in Input) or ("addition" in Input) or ("subtraction" in Input) or ("minus" in Input) \
-            or ("sub" in Input) or ("difference" in Input) or ("multiply" in Input) or ("multiplication" in Input) \
-            or ("divide" in Input) or ("division" in Input):
+        exit()
+    elif ("calculator" in s) or ("calculate" in s) or ("operations" in s) or \
+            ("maths" in s) or ("mathematical" in s) or ("calc" in s) or ("sum" in s) \
+            or ("add" in s) or ("addition" in s) or ("subtraction" in s) or ("minus" in s) \
+            or ("sub" in s) or ("difference" in s) or ("multiply" in s) or ("multiplication" in s) \
+            or ("divide" in s) or ("division" in s):
         engine.setProperty("rate", 150)
         engine.say("opening calculator")
         engine.runAndWait()
         os.system("start calc.exe")
-    elif "calendar" in Input:
-        engine.setProperty("rate", 150)
-        engine.say("which year do you want:")
-        engine.runAndWait()
-        p = int(input("\nWhich year do you want:"))
+        exit()
+    elif "calendar" in s:
         engine.setProperty("rate", 150)
         engine.say("wait a second opening calendar")
         engine.runAndWait()
-        print("\n", c.calendar(p))
-    elif "time" in Input:
+        print("\n", c.calendar(int(t.strftime("%Y"))))
+        exit()
+    elif "time" in s:
         time = int(t.strftime("%H"))
         if 5 <= time < 12:
             print(t.strftime("%I:%M:%S %p"))
-            engine.say("Good Morning" + t.strftime("%IHour%MMinute%SSeconds %p"))
+            engine.say(t.strftime("%IHour%MMinute%SSeconds %p"))
             engine.runAndWait()
+            exit()
         elif 12 <= time < 18:
             print(t.strftime("%I:%M:%S %p"))
-            engine.say("Good Afternoon" + t.strftime("%IHour%MMinute%SSeconds %p"))
+            engine.say(t.strftime("%IHour%MMinute%SSeconds %p"))
             engine.runAndWait()
+            exit()
         elif 18 <= time < 24 or 0 <= time < 5:
             print(t.strftime("%I:%M:%S %p"))
-            engine.say("Good Evening" + t.strftime("%IHour%MMinute%SSeconds %p"))
+            engine.say(t.strftime("%IHour%MMinute%SSeconds %p"))
             engine.runAndWait()
-    elif "date" in Input:
+            exit()
+    elif "date" in s:
         print(t.strftime("%x"))
         engine.say(t.strftime("%x"))
         engine.runAndWait()
-    elif "month" in Input:
+        exit()
+    elif "month" in s:
         print(t.strftime("%B"))
         engine.say(t.strftime("%B"))
         engine.runAndWait()
-    elif "year" in Input:
+        exit()
+    elif "year" in s:
         print(t.strftime("%Y"))
         engine.say(t.strftime("%Y"))
         engine.runAndWait()
-    elif "day" in Input:
+        exit()
+    elif "day" in s:
         print(t.strftime("%A"))
         engine.say(t.strftime("%A"))
         engine.runAndWait()
-    elif ("shutdown" in Input) or ("shutoff" in Input):
+        exit()
+    elif ("shutdown" in s) or ("shutoff" in s):
         engine.setProperty("rate", 150)
         engine.say("shutting down")
         engine.runAndWait()
         os.system("shutdown/s")
-    elif ("restart" in Input) or ("reopen" in Input):
+        exit()
+    elif ("restart" in s) or ("reopen" in s):
         engine.setProperty("rate", 150)
         engine.say("restarting")
         engine.runAndWait()
         os.system("shutdown/r")
-    elif ("logoff" in Input) or ("lock" in Input) or ("sign out" in Input) or ("sleep" in Input):
+        exit()
+    elif ("logoff" in s) or ("lock" in s) or ("sign out" in s) or ("sleep" in s):
         engine.setProperty("rate", 150)
         engine.say("siging off ")
         engine.runAndWait()
         os.system("shutdown/l")
-    elif "hibernate" in Input:
+        exit()
+    elif "hibernate" in s:
         engine.setProperty("rate", 150)
         engine.say("hibernating ")
         engine.runAndWait()
         os.system("shutdown/h")
-    elif "reboot" in Input:
+        exit()
+    elif "reboot" in s:
         engine.setProperty("rate", 150)
         engine.say("rebooting ")
         engine.runAndWait()
         os.system("shutdown/g")
+        exit()
 
     else:
         engine.setProperty("rate", 160)
-        engine.say("Sorry, I Didn't Get It")
+        engine.say("I am not sure say it again")
         engine.runAndWait()
-        print("\nSorry, I Didn't Get It ")
 
